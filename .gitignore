@@ -1,0 +1,6 @@
+"# Gitignore" 
+"data/ecommerce.db" 
+"__pycache__/" 
+"*.pyc" 
+"*.sqlite" 
+"data/raw/__MACOSX/" 
