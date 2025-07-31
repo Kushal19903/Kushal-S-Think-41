@@ -61,24 +61,42 @@ products_bp = Blueprint('products', __name__)
 def get_products():
     page = request.args.get('page', 1, type=int)
     limit = request.args.get('limit', 10, type=int)
+    department_id = request.args.get('department_id', type=int)
     offset = (page - 1) * limit
     
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
-        # Get products with department information
-        cursor.execute("""
-            SELECT p.*, d.name as department_name 
-            FROM products p 
-            LEFT JOIN departments d ON p.department_id = d.id 
-            LIMIT ? OFFSET ?
-        """, (limit, offset))
+        # Build query based on department filter
+        if department_id:
+            query = """
+                SELECT p.*, d.name as department_name 
+                FROM products p 
+                LEFT JOIN departments d ON p.department_id = d.id 
+                WHERE p.department_id = ?
+                LIMIT ? OFFSET ?
+            """
+            count_query = "SELECT COUNT(*) FROM products WHERE department_id = ?"
+            cursor.execute(query, (department_id, limit, offset))
+        else:
+            query = """
+                SELECT p.*, d.name as department_name 
+                FROM products p 
+                LEFT JOIN departments d ON p.department_id = d.id 
+                LIMIT ? OFFSET ?
+            """
+            count_query = "SELECT COUNT(*) FROM products"
+            cursor.execute(query, (limit, offset))
+        
         columns = [col[0] for col in cursor.description]  # Get column names
         products = [dict(zip(columns, row)) for row in cursor.fetchall()]  # Convert to dict
         
         # Get total count
-        cursor.execute("SELECT COUNT(*) FROM products")
+        if department_id:
+            cursor.execute(count_query, (department_id,))
+        else:
+            cursor.execute(count_query)
         total = cursor.fetchone()[0]  # Access tuple by index
         
         return jsonify({
@@ -88,7 +106,10 @@ def get_products():
                 "limit": limit,
                 "total": total,
                 "total_pages": (total + limit - 1) // limit
-            }
+            },
+            "filters": {
+                "department_id": department_id
+            } if department_id else None
         })
     finally:
         conn.close()
@@ -117,20 +138,3 @@ def get_product(product_id):
     finally:
         conn.close()
 
-@products_bp.route('/departments')
-def get_departments():
-    """Get all departments"""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    try:
-        cursor.execute("SELECT * FROM departments ORDER BY name")
-        columns = [col[0] for col in cursor.description]
-        departments = [dict(zip(columns, row)) for row in cursor.fetchall()]
-        
-        return jsonify({
-            "data": departments,
-            "count": len(departments)
-        })
-    finally:
-        conn.close()
