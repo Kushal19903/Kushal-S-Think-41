@@ -67,8 +67,13 @@ def get_products():
     cursor = conn.cursor()
     
     try:
-        # Get products
-        cursor.execute("SELECT * FROM products LIMIT ? OFFSET ?", (limit, offset))
+        # Get products with department information
+        cursor.execute("""
+            SELECT p.*, d.name as department_name 
+            FROM products p 
+            LEFT JOIN departments d ON p.department_id = d.id 
+            LIMIT ? OFFSET ?
+        """, (limit, offset))
         columns = [col[0] for col in cursor.description]  # Get column names
         products = [dict(zip(columns, row)) for row in cursor.fetchall()]  # Convert to dict
         
@@ -94,7 +99,12 @@ def get_product(product_id):
     cursor = conn.cursor()
     
     try:
-        cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
+        cursor.execute("""
+            SELECT p.*, d.name as department_name 
+            FROM products p 
+            LEFT JOIN departments d ON p.department_id = d.id 
+            WHERE p.id = ?
+        """, (product_id,))
         product = cursor.fetchone()
         
         if not product:
@@ -104,5 +114,23 @@ def get_product(product_id):
         product_dict = dict(zip(columns, product))  # Convert to dict
             
         return jsonify(product_dict)
+    finally:
+        conn.close()
+
+@products_bp.route('/departments')
+def get_departments():
+    """Get all departments"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("SELECT * FROM departments ORDER BY name")
+        columns = [col[0] for col in cursor.description]
+        departments = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        return jsonify({
+            "data": departments,
+            "count": len(departments)
+        })
     finally:
         conn.close()

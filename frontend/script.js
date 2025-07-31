@@ -1,5 +1,3 @@
-
-
 // API Configuration
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -39,10 +37,15 @@ async function loadProducts(page = 1, limit = 12) {
     showLoading();
     
     try {
-        // Add artificial delay to show loading state (remove in production)
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const params = new URLSearchParams(window.location.search);
+        const departmentId = params.get('department');
         
-        const response = await fetch(`${API_BASE_URL}/products?page=${page}&limit=${limit}`);
+        let url = `${API_BASE_URL}/products?page=${page}&limit=${limit}`;
+        if (departmentId) {
+            url += `&department=${departmentId}`;
+        }
+        
+        const response = await fetch(url);
         
         if (!response.ok) {
             const errorData = await response.json();
@@ -147,7 +150,7 @@ function renderProductDetail(product) {
             <div class="detail-meta">
                 <p><strong>Brand:</strong> ${product.brand}</p>
                 <p><strong>Category:</strong> ${product.category}</p>
-                <p><strong>Department:</strong> ${product.department}</p>
+                <p><strong>Department:</strong> ${product.department || 'N/A'}</p>
                 <p><strong>SKU:</strong> ${product.sku}</p>
                 <p><strong>Cost:</strong> $${product.cost.toFixed(2)}</p>
                 <p><strong>Distribution Center:</strong> ${product.distribution_center_id}</p>
@@ -206,6 +209,39 @@ function renderPagination(pagination) {
     paginationEl.appendChild(paginationContainer);
 }
 
+// Add department filter functionality
+async function loadDepartments() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/departments`);
+        const departments = await response.json();
+        
+        const filterEl = document.getElementById('department-filter');
+        if (filterEl) {
+            filterEl.innerHTML = `
+                <select onchange="filterByDepartment(this.value)">
+                    <option value="">All Departments</option>
+                    ${departments.map(d => `
+                        <option value="${d.id}">${d.name}</option>
+                    `).join('')}
+                </select>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading departments:', error);
+    }
+}
+
+async function filterByDepartment(departmentId) {
+    const params = new URLSearchParams(window.location.search);
+    if (departmentId) {
+        params.set('department', departmentId);
+    } else {
+        params.delete('department');
+    }
+    params.set('page', '1');
+    window.location.search = params.toString();
+}
+
 // Helper function to truncate long text
 function truncateText(text, maxLength) {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
@@ -218,6 +254,7 @@ function initPage() {
     if (path === 'index.html' || path === '') {
         const page = new URLSearchParams(window.location.search).get('page') || 1;
         loadProducts(page);
+        loadDepartments();
     }
     else if (path === 'details.html') {
         const params = new URLSearchParams(window.location.search);

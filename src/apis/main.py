@@ -12,7 +12,8 @@ def home():
         "message": "Welcome to Products API",
         "endpoints": {
             "products": "/api/products",
-            "single_product": "/api/products/<id>"
+            "single_product": "/api/products/<id>",
+            "departments": "/api/departments"
         }
     })
 
