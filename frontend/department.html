@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce - Department</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="nav-bar">
+            <a href="index.html" class="nav-link">← All Products</a>
+            <a href="departments.html" class="nav-link">All Departments</a>
+        </nav>
+        <div class="department-header">
+            <h1 id="department-name">Department</h1>
+            <p id="department-count" class="department-count">Loading...</p>
+        </div>
+    </header>
+    
+    <main>
+        <div id="loading">Loading department products...</div>
+        <div id="error" class="error"></div>
+        <div id="products-grid" class="grid-container">
+            <!-- Products will be loaded here -->
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </main>
+    
+    <script src="script.js"></script>
+    <script>
+        // Load department products when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const departmentId = params.get('id');
+            const page = params.get('page') || 1;
+            
+            if (!departmentId) {
+                showError('No department specified');
+                return;
+            }
+            
+            await loadDepartmentProducts(departmentId, page);
+        });
+    </script>
+</body>
+</html>

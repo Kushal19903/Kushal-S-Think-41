@@ -1,6 +1,7 @@
 /* Base Styles */
 :root {
-    --primary: #3498db;
+    --primary: #2874f0;
+    --primary-dark: #1c5bb8;
     --secondary: #2c3e50;
     --success: #27ae60;
     --danger: #e74c3c;
@@ -8,6 +9,9 @@
     --dark: #34495e;
     --gray: #95a5a6;
     --light-gray: #f5f7fa;
+    --sidebar-width: 280px;
+    --navbar-height: 64px;
+    --orange: #ff9f00;
 }
 
 * {
@@ -19,8 +23,123 @@
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    padding: 20px;
     background-color: #f4f4f4;
+    margin: 0;
+}
+
+/* App Layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: var(--sidebar-width);
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar h2 {
+    color: var(--secondary);
+    margin-bottom: 20px;
+    font-size: 24px;
+    border-bottom: 2px solid var(--light);
+    padding-bottom: 15px;
+}
+
+.departments-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.department-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.department-item:hover {
+    background-color: var(--light-gray);
+    border-color: var(--primary);
+}
+
+.department-item.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.department-item.active .product-count {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.department-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.product-count {
+    font-size: 12px;
+    color: var(--gray);
+    background: var(--light);
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.department-item.active .product-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+}
+
+.main-header {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-content h1 {
+    color: var(--secondary);
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.breadcrumb {
+    margin-top: 15px;
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.breadcrumb span {
+    color: var(--dark);
+}
+
+.content-area {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    min-height: 600px;
 }
 
 header {
@@ -373,6 +492,104 @@ h1 {
     background: #219653;
 }
 
+/* Department Pages Styles */
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px 0;
+    border-bottom: 2px solid var(--light);
+}
+
+.nav-link {
+    color: var(--primary);
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.department-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.department-count {
+    color: var(--gray);
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* Departments Grid */
+.departments-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+}
+
+.department-card {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.department-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    border-color: var(--primary);
+}
+
+.department-card h2 {
+    color: var(--secondary);
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.department-card p {
+    color: var(--gray);
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.view-department {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.view-department:hover {
+    background: #2980b9;
+}
+
+.no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: var(--gray);
+    font-size: 18px;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .detail-container {
@@ -388,5 +605,14 @@ h1 {
     .page-btn {
         width: 100%;
         justify-content: center;
+    }
+    
+    .nav-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .departments-container {
+        grid-template-columns: 1fr;
     }
 }
