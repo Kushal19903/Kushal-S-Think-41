@@ -16,7 +16,7 @@ conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
 # Drop existing table if it exists
-# cursor.execute('DROP TABLE IF EXISTS products')
+cursor.execute('DROP TABLE IF EXISTS products')
 
 # Create products table
 cursor.execute('''
