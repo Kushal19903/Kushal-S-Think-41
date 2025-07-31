@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+    <header>
+        <a href="index.html" class="back-btn">&larr; Back to Products</a>
+        <h1>Product Details</h1>
+    </header>
+    
+    <main id="product-detail">
+        <div id="loading">Loading product details...</div>
+        <div id="product-content" class="detail-container"></div>
+        <div id="error" class="error"></div>
+    </main>
+    
+    <script src="script.js"></script>
+    <script>
+        // Load product details when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            
+            if (!productId) {
+                showError('No product ID specified');
+                return;
+            }
+            
+            await loadProductDetails(productId);
+        });
+    </script>
+</body>
+</html>

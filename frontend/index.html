@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce - Products</title>
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+    <header>
+        <h1>Our Products</h1>
+    </header>
+    
+    <main>
+        <div id="loading">Loading products...</div>
+        <div id="products-grid" class="grid-container"></div>
+        <div id="pagination" class="pagination"></div>
+    </main>
+    
+    <script src="script.js"></script>
+    <script>
+        // Initialize the product list
+        document.addEventListener('DOMContentLoaded', async () => {
+            const page = new URLSearchParams(window.location.search).get('page') || 1;
+            await loadProducts(page);
+        });
+    </script>
+</body>
+</html>
